@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gov-blue: #2457A6;
+  --color-gov-navy: #17365D;
+  --color-gov-saffron: #E88924;
+  --color-gov-saffron-light: #FFF5E8;
+  --color-gov-green: #258451;
+  --color-gov-bg: #F5F8FC;
+  --color-gov-blue-pale: #EAF1FF;
+  --color-gov-text: #243247;
+  --color-gov-text-sec: #5D6B7C;
+  --color-gov-border: #DCE4EE;
+  --font-sans: 'Inter', 'Manrope', system-ui, sans-serif;
+}
+
+body {
+  color: #243247;
+  background-color: #F5F8FC;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg-animated-orbs {
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(232, 137, 36, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(36, 87, 166, 0.05) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: orbs 15s ease infinite alternate;
+}
+
+@keyframes orbs {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* High contrast mode variables */
+.high-contrast {
+  background-color: black !important;
+  color: white !important;
+}
+
+.high-contrast .bg-white {
+  background-color: #111 !important;
+  border-color: #444 !important;
+}
+
+.high-contrast .text-gov-text,
+.high-contrast .text-gov-text-sec {
+  color: #eee !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

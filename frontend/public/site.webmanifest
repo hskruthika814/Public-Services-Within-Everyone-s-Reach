@@ -1,0 +1,50 @@
+{
+  "name": "CivicEase — Public Service Portal",
+  "short_name": "CivicEase",
+  "description": "Smart Citizen Public Service & Grievance Redressal Portal — Submit, track and resolve civic complaints.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#17365D",
+  "theme_color": "#17365D",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["government", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Submit Request",
+      "short_name": "Submit",
+      "description": "Submit a new public service request",
+      "url": "/submit",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Request",
+      "short_name": "Track",
+      "description": "Track an existing service request",
+      "url": "/track",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Officer Dashboard",
+      "short_name": "Dashboard",
+      "description": "Officer grievance review dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

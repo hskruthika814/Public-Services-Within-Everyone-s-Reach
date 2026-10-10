@@ -1,0 +1,3 @@
+@echo off
+echo Opening CivicEase in Mozilla Firefox...
+start "" firefox.exe "http://localhost:5173/"
