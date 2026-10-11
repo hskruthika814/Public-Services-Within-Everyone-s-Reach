@@ -66,6 +66,21 @@ export function SubmitRequest() {
     fetchCategories();
   }, [fetchCategories]);
 
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    if (cat) {
+      setFormData(prev => ({ ...prev, category_id: String(cat) }));
+    }
+  }, [searchParams]);
+
+  const selectCategory = (catId: number | string, proceed: boolean = false) => {
+    setFormData(prev => ({ ...prev, category_id: String(catId) }));
+    setError(null);
+    if (proceed) {
+      setStep(2);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -232,6 +247,29 @@ export function SubmitRequest() {
             <h2 className="text-xl font-bold mb-1">Select Service Category</h2>
             <p className="text-sm text-gov-text-sec mb-6">Choose the department that best matches your issue.</p>
 
+            {/* Top Selection Status */}
+            {(() => {
+              const selectedCat = categories.find(c => String(c.id) === String(formData.category_id));
+              return selectedCat ? (
+                <div className="mb-5 p-3.5 bg-blue-50 border border-gov-blue/30 rounded-xl flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={18} className="text-gov-blue shrink-0" />
+                    <div>
+                      <span className="text-xs font-bold uppercase text-gray-500 tracking-wider mr-2">Selected Category:</span>
+                      <span className="text-sm font-bold text-gov-blue">{selectedCat.name}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="px-4 py-1.5 bg-gov-blue text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition-colors flex items-center gap-1.5 shadow-sm"
+                  >
+                    Continue to Details <ArrowRight size={14} />
+                  </button>
+                </div>
+              ) : null;
+            })()}
+
             {/* Loading State */}
             {catLoading && (
               <div className="flex flex-col items-center justify-center py-16 gap-4">
@@ -240,70 +278,76 @@ export function SubmitRequest() {
               </div>
             )}
 
-            {/* Error State */}
-            {!catLoading && catError && (
-              <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-                <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
-                  <AlertCircle size={28} className="text-red-500" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800 mb-1">Unable to load service categories</p>
-                  <p className="text-sm text-gray-500">Please check your connection and try again.</p>
-                </div>
-                <button
-                  onClick={fetchCategories}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gov-blue text-white rounded-lg font-medium hover:bg-blue-800 transition-colors"
-                >
-                  <RefreshCw size={16} /> Retry
-                </button>
-              </div>
-            )}
-
             {/* Categories Grid */}
-            {!catLoading && !catError && categories.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {!catLoading && categories.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {categories.map(cat => {
                   const iconData = CATEGORY_ICONS[cat.code] || CATEGORY_ICONS['OTHER'];
-                  const isSelected = formData.category_id == cat.id;
+                  const isSelected = String(formData.category_id) === String(cat.id);
                   return (
-                    <label key={cat.id} className={`
-                      border-2 rounded-xl p-4 cursor-pointer transition-all flex items-start gap-4
-                      ${isSelected 
-                        ? 'border-gov-blue bg-blue-50 shadow-md ring-2 ring-gov-blue/20' 
-                        : 'border-gray-200 hover:border-gov-blue/50 hover:shadow-sm bg-white'
-                      }
-                    `}>
-                      <input 
-                        type="radio" 
-                        name="category_id" 
-                        value={cat.id} 
-                        checked={isSelected}
-                        onChange={handleInputChange}
-                        className="sr-only"
-                      />
+                    <div 
+                      key={cat.id} 
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => selectCategory(cat.id)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectCategory(cat.id); }}
+                      className={`
+                        border-2 rounded-xl p-4 cursor-pointer transition-all flex items-start gap-4 text-left select-none
+                        ${isSelected 
+                          ? 'border-gov-blue bg-blue-50/80 shadow-md ring-2 ring-gov-blue/20' 
+                          : 'border-gray-200 hover:border-gov-blue/50 hover:shadow-sm bg-white'
+                        }
+                      `}
+                    >
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border ${iconData.bg} ${iconData.color}`}>
                         {iconData.icon}
                       </div>
-                      <div className="min-w-0">
-                        <span className={`font-bold text-sm block mb-0.5 ${isSelected ? 'text-gov-blue' : 'text-gov-navy'}`}>
-                          {cat.name}
-                        </span>
-                        <span className="text-xs text-gray-500 leading-relaxed">{cat.description}</span>
-                        {cat.default_priority === 'critical' && (
-                          <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">
-                            ⚡ Priority Response
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className={`font-bold text-sm block ${isSelected ? 'text-gov-blue' : 'text-gov-navy'}`}>
+                            {cat.name}
                           </span>
+                          {isSelected && (
+                            <span className="text-[11px] font-bold text-gov-blue bg-white border border-gov-blue/30 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                              <CheckCircle2 size={12} /> Selected
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500 leading-relaxed block">{cat.description}</span>
+                        {cat.name_kn && (
+                          <span className="text-[11px] text-gray-400 block mt-0.5">{cat.name_kn}</span>
                         )}
-                        {cat.default_priority === 'high' && (
-                          <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
-                            🔺 High Priority
-                          </span>
-                        )}
+                        <div className="mt-2.5 flex items-center justify-between gap-2">
+                          {cat.default_priority === 'critical' && (
+                            <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">
+                              ⚡ Priority Response
+                            </span>
+                          )}
+                          {cat.default_priority === 'high' && (
+                            <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+                              🔺 High Priority
+                            </span>
+                          )}
+                          {(!cat.default_priority || cat.default_priority === 'medium') && (
+                            <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                              Standard
+                            </span>
+                          )}
+                          {isSelected && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setStep(2);
+                              }}
+                              className="text-[11px] font-bold text-white bg-gov-blue hover:bg-blue-800 px-3 py-1 rounded-md ml-auto flex items-center gap-1 shadow-xs"
+                            >
+                              Continue &rarr;
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      {isSelected && (
-                        <CheckCircle2 size={20} className="text-gov-blue shrink-0 mt-0.5 ml-auto" />
-                      )}
-                    </label>
+                    </div>
                   );
                 })}
               </div>
