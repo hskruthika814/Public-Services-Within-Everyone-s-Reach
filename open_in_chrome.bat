@@ -1,0 +1,3 @@
+@echo off
+echo Opening CivicEase Portal in Google Chrome...
+start chrome "https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/"
