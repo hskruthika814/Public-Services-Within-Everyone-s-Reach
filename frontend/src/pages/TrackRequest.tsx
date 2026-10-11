@@ -26,9 +26,21 @@ export function TrackRequest() {
     setLoading(true);
     setError('');
     try {
-      const res = await api.get(`/complaints/track/${trackingRef}`);
+      const res = await api.get(`/complaints/track/${trackingRef.trim()}`);
       setComplaint(res.data.complaint);
     } catch (err: any) {
+      // Check local storage for complaints submitted on GitHub Pages
+      try {
+        const localComplaints = JSON.parse(localStorage.getItem('civicease_local_complaints') || '[]');
+        const found = localComplaints.find((c: any) => c.tracking_ref?.toUpperCase() === trackingRef.trim().toUpperCase());
+        if (found) {
+          setComplaint(found);
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
       setError(err.response?.data?.message || 'Complaint not found. Please check your reference number.');
       setComplaint(null);
     } finally {

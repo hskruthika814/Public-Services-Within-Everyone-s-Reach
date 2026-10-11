@@ -2,12 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search, FileText, CheckCircle2, Shield, Settings2, ShieldCheck, MapPin } from 'lucide-react';
 import { api } from '../api';
+import { DEFAULT_CATEGORIES } from '../data/defaultCategories';
 
 export function Home() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>(DEFAULT_CATEGORIES);
 
   useEffect(() => {
-    api.get('/public/categories').then(res => setCategories(res.data.categories)).catch(console.error);
+    api.get('/public/categories')
+      .then(res => {
+        if (res.data?.categories?.length) {
+          setCategories(res.data.categories);
+        }
+      })
+      .catch(() => {
+        // Keep DEFAULT_CATEGORIES seamlessly
+      });
   }, []);
 
   return (
