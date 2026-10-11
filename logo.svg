@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" fill="none">
+  <!-- CivicEase Shield Arch -->
+  <path d="M22 24C22 17.373 27.373 12 34 12C40.627 12 46 17.373 46 24V37C46 45 39 49.5 34 51C29 49.5 22 45 22 37V24Z" 
+        stroke="#17365D" stroke-width="4.5" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Glowing Saffron Star -->
+  <path d="M34 5L36 10.5L41.5 12L36 13.5L34 19L32 13.5L26.5 12L32 10.5L34 5Z" 
+        fill="#E88924"/>
+
+  <!-- Dynamic Blue Bridge Swoosh -->
+  <path d="M14 43C19.5 31.5 29 27 44 27C49.5 27 53 28 55 28.8C50 34.5 40.5 37.5 27.5 37.5C20.5 37.5 16 40.5 14 43Z" 
+        fill="url(#civic-blue-grad)"/>
+
+  <!-- Wordmark: CivicEase -->
+  <text x="68" y="38" font-family="'Inter', 'Manrope', system-ui, sans-serif" font-size="28" font-weight="800" fill="#17365D" letter-spacing="-0.5">Civic<tspan fill="#2457A6">Ease</tspan></text>
+  <text x="69" y="52" font-family="'Inter', 'Manrope', system-ui, sans-serif" font-size="8.5" font-weight="700" fill="#5D6B7C" letter-spacing="1.2">PUBLIC CIVIC SERVICE PLATFORM</text>
+
+  <defs>
+    <linearGradient id="civic-blue-grad" x1="14" y1="43" x2="55" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0062E0"/>
+      <stop offset="100%" stop-color="#0099FF"/>
+    </linearGradient>
+  </defs>
+</svg>

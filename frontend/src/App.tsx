@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { Layout } from './components/Layout';
@@ -14,7 +14,7 @@ function App() {
   return (
     <AccessibilityProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
@@ -30,7 +30,7 @@ function App() {
               <Route path="*" element={<Home />} />
             </Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </AuthProvider>
     </AccessibilityProvider>
   );

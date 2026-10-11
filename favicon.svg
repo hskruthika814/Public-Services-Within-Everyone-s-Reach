@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Navy background with rounded corners -->
+  <rect width="64" height="64" rx="14" fill="#17365D"/>
+
+  <!-- White shield outline -->
+  <path d="M32 8L48 14V30C48 40 40 47 32 50C24 47 16 40 16 30V14L32 8Z"
+        fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- City skyline silhouette inside shield -->
+  <rect x="23" y="28" width="3" height="10" rx="0.5" fill="white" opacity="0.9"/>
+  <rect x="27" y="24" width="4" height="14" rx="0.5" fill="white" opacity="0.9"/>
+  <rect x="32" y="22" width="4" height="16" rx="0.5" fill="white"/>
+  <rect x="37" y="26" width="3" height="12" rx="0.5" fill="white" opacity="0.9"/>
+
+  <!-- Windows on buildings (small squares) -->
+  <rect x="24" y="30" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="24" y="33" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="28" y="26" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="28" y="29" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="28" y="32" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="33" y="25" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="33" y="28" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="33" y="31" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="38" y="28" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+  <rect x="38" y="31" width="1.2" height="1.2" fill="#17365D" opacity="0.7"/>
+
+  <!-- Blue swoosh arc -->
+  <path d="M18 36 Q32 32 46 36" stroke="#0066FF" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Orange/saffron star at top of shield -->
+  <polygon points="32,9 33.2,12.5 37,12.5 34,14.5 35.2,18 32,16 28.8,18 30,14.5 27,12.5 30.8,12.5"
+           fill="#E88924"/>
+</svg>
