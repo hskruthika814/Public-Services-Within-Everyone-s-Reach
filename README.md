@@ -6,17 +6,18 @@ Accessible Digital Public Service & Grievance Redressal Portal for all citizens.
 
 ---
 
-## 🌐 Complete Website Links
+## 🌐 Live Website Links
 
-| Page / Feature | URL | Description |
+| Page / Feature | Live URL | Description |
 | :--- | :--- | :--- |
-| **Citizen Home Portal** | [http://localhost:5173/](http://localhost:5173/) | Main public landing page, category overview, accessibility toolbar. |
-| **Submit Service Request** | [http://localhost:5173/submit](http://localhost:5173/submit) | Multi-step request submission with automatic priority detection & contact capture. |
-| **Track Request (with Audio)** | [http://localhost:5173/track](http://localhost:5173/track) | Real-time status tracker, submitter info, and **🔊 Read Status Aloud**. |
-| **Complaint Tracker Dashboard** | [http://localhost:5173/dashboard](http://localhost:5173/dashboard) | Review console showing all submitted complaints with **Name, Email, Phone**, status review, & voice readout. |
-| **Staff & Admin Console** | [http://localhost:5173/login](http://localhost:5173/login) | Role-based departmental queues, SLA trackers, and resolution logging. |
-| **Unified Single-Page Portal** | [http://localhost:5173/portal.html](http://localhost:5173/portal.html) | Standalone all-in-one portal with submit, track, staff login, and API tester. |
-| **Backend REST API** | [http://localhost:5000/api/health](http://localhost:5000/api/health) | Flask REST backend and automated routing engine. |
+| **Citizen Home Portal** | [Open Portal](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/) | Main public landing page, category overview, accessibility toolbar. |
+| **Submit Service Request** | [Submit Request](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/#/submit) | Multi-step request submission with automatic priority detection & contact capture. |
+| **Track Request (with Audio)** | [Track Request](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/#/track) | Real-time status tracker, submitter info, and **🔊 Read Status Aloud**. |
+| **Create Account** | [Create Account](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/#/login) | Citizen account registration with Name and Mail ID. |
+| **Complaint Tracker Dashboard** | [Review Dashboard](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/#/dashboard) | Review console showing submitted complaints, status review, & voice readout. |
+| **Unified Single-Page Portal** | [Unified Portal](https://hskruthika814.github.io/Public-Services-Within-Everyone-s-Reach/portal.html) | Standalone all-in-one portal with submit, track, and demo login. |
+
+> 💻 **Local Development Server:** If running locally, the dev server runs at `http://localhost:5173/`.
 
 ---
 
