@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, User, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { CivicEaseLogo } from '../components/CivicEaseLogo';
 
 export function Login() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -16,19 +16,35 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!name.trim()) {
+      setError('Please enter your name.');
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Please enter your Gmail / email address.');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      const res = await api.post('/auth/login', { email, password });
-      login(res.data.access_token, res.data.user);
+      // Create user session with Name and Gmail
+      const user = {
+        id: Date.now(),
+        full_name: name.trim(),
+        email: email.trim(),
+        role: 'citizen',
+      };
       
-      if (res.data.user.role === 'citizen') {
-        navigate('/submit');
-      } else {
-        navigate('/staff');
-      }
+      const token = 'citizen-token-' + Date.now();
+      login(token, user);
+      
+      // Navigate to submit page or dashboard
+      navigate('/submit');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      setError('Sign in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -36,98 +52,86 @@ export function Login() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-16">
-      <div className="bg-white rounded-xl shadow-md border border-gov-border p-8">
+      <div className="bg-white rounded-2xl shadow-lg border border-gov-border p-8 transition-all">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-gov-blue rounded-full flex items-center justify-center text-white mx-auto mb-4">
-            <span className="font-bold">CE</span>
+          <div className="flex justify-center mb-3">
+            <CivicEaseLogo size="lg" />
           </div>
           <h1 className="text-2xl font-bold text-gov-navy">Sign In</h1>
-          <p className="text-sm text-gov-text-sec mt-1">Access your CivicEase account</p>
+          <p className="text-sm text-gov-text-sec mt-1">
+            Enter your Name and Gmail to access CivicEase
+          </p>
         </div>
         
         {error && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2 rounded">
+          <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2 rounded-lg">
             <AlertCircle className="shrink-0 mt-0.5" size={16} />
             <p>{error}</p>
           </div>
         )}
         
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name Field */}
           <div>
-            <label className="block text-sm font-bold text-gov-navy mb-1" htmlFor="email">Email Address</label>
+            <label className="block text-sm font-bold text-gov-navy mb-1.5" htmlFor="name">
+              Full Name
+            </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input 
+                id="name"
+                type="text" 
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="e.g. Kruthika H S"
+                className="w-full pl-10 pr-4 py-2.5 border border-gov-border rounded-lg focus:ring-2 focus:ring-gov-blue focus:border-gov-blue outline-none text-sm transition-all"
+                required
+                autoFocus
+              />
+            </div>
+          </div>
+
+          {/* Gmail / Email Field */}
+          <div>
+            <label className="block text-sm font-bold text-gov-navy mb-1.5" htmlFor="email">
+              Gmail / Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input 
                 id="email"
                 type="email" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gov-border rounded focus:ring-2 focus:ring-gov-blue outline-none"
+                placeholder="e.g. name@gmail.com"
+                className="w-full pl-10 pr-4 py-2.5 border border-gov-border rounded-lg focus:ring-2 focus:ring-gov-blue focus:border-gov-blue outline-none text-sm transition-all"
                 required
               />
             </div>
           </div>
           
-          <div>
-            <label className="block text-sm font-bold text-gov-navy mb-1" htmlFor="password">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                id="password"
-                type="password" 
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gov-border rounded focus:ring-2 focus:ring-gov-blue outline-none"
-                required
-              />
-            </div>
-          </div>
-          
+          {/* Submit Button */}
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-2.5 bg-gov-blue text-white rounded font-medium hover:bg-blue-800 transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
+            className="w-full py-3 bg-gov-blue text-white rounded-lg font-bold text-sm hover:bg-gov-navy transition-all duration-200 disabled:opacity-70 flex justify-center items-center gap-2 shadow-sm hover:shadow"
           >
-            {loading && <Loader2 className="animate-spin" size={16} />}
-            Sign In
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={16} />
+                Signing In...
+              </>
+            ) : (
+              <>
+                <span>Sign In</span>
+                <ArrowRight size={16} />
+              </>
+            )}
           </button>
         </form>
-        
-        <div className="mt-8 pt-6 border-t border-gray-100">
-           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">8 Department Officers (1-Click Fill)</h3>
-           <p className="text-[11px] text-gray-500 mb-3">Click any officer to autofill credentials:</p>
-           <div className="grid grid-cols-2 gap-1.5 text-xs">
-             <button type="button" onClick={() => { setEmail('staff.pwd@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>PWD:</strong> Suresh Kumar
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.elec@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Electrical:</strong> Priya Sharma
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.water@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Water:</strong> Rajan Pillai
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.sanit@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Sanitation:</strong> Kavitha Nair
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.drain@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Drainage:</strong> Mohammed Ali
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.parks@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Parks:</strong> Anita Desai
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.safety@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>Safety:</strong> Vikram Singh
-             </button>
-             <button type="button" onClick={() => { setEmail('staff.gen@civicease.demo'); setPassword('Staff@123'); }} className="text-left p-1.5 bg-gray-50 hover:bg-blue-50 border rounded text-[11px]">
-               <strong>General:</strong> Lakshmi Rao
-             </button>
-             <button type="button" onClick={() => { setEmail('admin@civicease.demo'); setPassword('Admin@123'); }} className="text-left p-1.5 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded text-[11px] col-span-2 text-purple-900 font-semibold">
-               <strong>Admin:</strong> System Administrator (admin@civicease.demo)
-             </button>
-           </div>
-           <div className="mt-2 text-[10px] text-gray-500 text-center">
-             Password: <span className="font-mono text-gov-navy font-bold">Staff@123</span> / <span className="font-mono text-gov-navy font-bold">Admin@123</span>
-           </div>
+
+        <div className="mt-6 text-center text-xs text-gray-500">
+          No password needed. Simply sign in with your Name and Gmail.
         </div>
       </div>
     </div>
