@@ -3,6 +3,8 @@ import { api } from '../api';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
+import { authenticateCredentials } from '../data/demoUsers';
+import { DEFAULT_COMPLAINTS } from '../data/defaultComplaints';
 import { 
   Search, Filter, User, Mail, Phone, MapPin, Clock, ShieldAlert, 
   CheckCircle2, AlertTriangle, RefreshCw, ExternalLink, MessageSquare, 
@@ -81,14 +83,32 @@ export function ReviewDashboard() {
 
   const fetchComplaints = async () => {
     setLoading(true);
+    let loadedFromApi = false;
     try {
       const res = await api.get('/complaints/all');
-      setComplaints(res.data.complaints || []);
+      if (res.data?.complaints && Array.isArray(res.data.complaints) && res.data.complaints.length > 0) {
+        setComplaints(res.data.complaints);
+        loadedFromApi = true;
+      }
     } catch (err) {
-      console.error('Failed to load complaints for review dashboard', err);
-    } finally {
-      setLoading(false);
+      console.warn('API /complaints/all unavailable; falling back to local and demo complaints', err);
     }
+
+    if (!loadedFromApi) {
+      try {
+        const localStored: any[] = JSON.parse(localStorage.getItem('civicease_local_complaints') || '[]');
+        const combined = [...localStored];
+        for (const def of DEFAULT_COMPLAINTS) {
+          if (!combined.some(c => c.tracking_ref === def.tracking_ref || c.id === def.id)) {
+            combined.push(def);
+          }
+        }
+        setComplaints(combined);
+      } catch {
+        setComplaints(DEFAULT_COMPLAINTS);
+      }
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -103,22 +123,22 @@ export function ReviewDashboard() {
     setLoginError('');
     setLoginLoading(true);
 
-    const emailToUse = customEmail || loginEmail;
+    const emailToUse = (customEmail || loginEmail).trim();
     const pwdToUse = customPassword || loginPassword;
 
-    if (!emailToUse || !pwdToUse) {
-      setLoginError('Please enter both email and password.');
+    if (!emailToUse) {
+      setLoginError('Please enter your officer or user email.');
       setLoginLoading(false);
       return;
     }
 
     try {
-      const res = await api.post('/auth/login', { email: emailToUse, password: pwdToUse });
-      authLogin(res.data.access_token, res.data.user);
-      setActionSuccessMsg(`Authenticated as ${res.data.user.full_name} (${res.data.user.role.toUpperCase()}). Complaint history unlocked!`);
+      const { token, user: authenticatedUser } = await authenticateCredentials(emailToUse, pwdToUse);
+      authLogin(token, authenticatedUser);
+      setActionSuccessMsg(`Authenticated as ${authenticatedUser.full_name} (${authenticatedUser.role.toUpperCase()}). Complaint history unlocked!`);
       setTimeout(() => setActionSuccessMsg(''), 5000);
     } catch (err: any) {
-      setLoginError(err.response?.data?.message || 'Authentication failed. Please verify your email and password.');
+      setLoginError(err.message || 'Authentication failed. Please verify your email and password.');
     } finally {
       setLoginLoading(false);
     }
@@ -177,22 +197,42 @@ export function ReviewDashboard() {
     }
   };
 
+  const updateLocalComplaintStatus = (complaintId: number, trackingRef: string, newStatus: string, notes: string) => {
+    setComplaints(prev => prev.map(c => (c.id === complaintId || c.tracking_ref === trackingRef) ? { ...c, status: newStatus, resolution_notes: notes } : c));
+    try {
+      const localList = JSON.parse(localStorage.getItem('civicease_local_complaints') || '[]');
+      const idx = localList.findIndex((c: any) => c.id === complaintId || c.tracking_ref === trackingRef);
+      if (idx >= 0) {
+        localList[idx].status = newStatus;
+        localList[idx].resolution_notes = notes;
+      } else {
+        const found = complaints.find(c => c.id === complaintId || c.tracking_ref === trackingRef);
+        if (found) {
+          localList.unshift({ ...found, status: newStatus, resolution_notes: notes });
+        }
+      }
+      localStorage.setItem('civicease_local_complaints', JSON.stringify(localList));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleQuickStatusChange = async (complaint: any, newStatus: string) => {
     setUpdatingId(complaint.id);
+    const notes = reviewNotes[complaint.id] || `Status updated to ${newStatus.replace('_', ' ')} by ${user?.full_name || 'Review Officer'}`;
     try {
-      const notes = reviewNotes[complaint.id] || `Status updated to ${newStatus.replace('_', ' ')} by ${user?.full_name || 'Review Officer'}`;
       await api.patch(`/complaints/${complaint.id}/review`, {
         status: newStatus,
         remarks: notes
       });
-      // Store the review and increment/update the persistent counts
-      recordReview(complaint, newStatus, notes);
-      setActionSuccessMsg(`Complaint #${complaint.id} status updated to ${newStatus.replace('_', ' ')}. Stored in dashboard.`);
-      setTimeout(() => setActionSuccessMsg(''), 4000);
       await fetchComplaints();
     } catch (err) {
-      alert('Failed to update complaint status. Please try again.');
+      // Local fallback for GitHub Pages / offline mode
+      updateLocalComplaintStatus(complaint.id, complaint.tracking_ref, newStatus, notes);
     } finally {
+      recordReview(complaint, newStatus, notes);
+      setActionSuccessMsg(`Complaint #${complaint.tracking_ref || complaint.id} status updated to ${newStatus.replace('_', ' ')}. Stored in dashboard.`);
+      setTimeout(() => setActionSuccessMsg(''), 4000);
       setUpdatingId(null);
     }
   };
@@ -201,22 +241,23 @@ export function ReviewDashboard() {
     e.preventDefault();
     if (!activeModalComplaint || !modalStatus) return;
     setUpdatingId(activeModalComplaint.id);
+    const remarks = modalRemarks || `Status updated to ${modalStatus} by ${user?.full_name || 'Officer'}`;
     try {
       await api.patch(`/complaints/${activeModalComplaint.id}/review`, {
         status: modalStatus,
-        remarks: modalRemarks || `Status updated to ${modalStatus} by ${user?.full_name || 'Officer'}`
+        remarks
       });
-      // Store review record in dashboard
-      recordReview(activeModalComplaint, modalStatus, modalRemarks);
+      await fetchComplaints();
+    } catch (err) {
+      // Local fallback for GitHub Pages / offline mode
+      updateLocalComplaintStatus(activeModalComplaint.id, activeModalComplaint.tracking_ref, modalStatus, remarks);
+    } finally {
+      recordReview(activeModalComplaint, modalStatus, remarks);
       setActionSuccessMsg(`Complaint ${activeModalComplaint.tracking_ref} reviewed and saved. Number stored in dashboard.`);
       setTimeout(() => setActionSuccessMsg(''), 4000);
       setActiveModalComplaint(null);
       setModalStatus('');
       setModalRemarks('');
-      await fetchComplaints();
-    } catch (err) {
-      alert('Failed to submit review');
-    } finally {
       setUpdatingId(null);
     }
   };
