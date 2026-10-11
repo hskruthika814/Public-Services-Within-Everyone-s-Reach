@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Mail, User, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, User, AlertCircle, Loader2, ArrowRight, UserPlus } from 'lucide-react';
 import { CivicEaseLogo } from '../components/CivicEaseLogo';
 
 export function Login() {
@@ -18,19 +18,19 @@ export function Login() {
     setError('');
 
     if (!name.trim()) {
-      setError('Please enter your name.');
+      setError('Please enter your Name.');
       return;
     }
 
     if (!email.trim()) {
-      setError('Please enter your Gmail / email address.');
+      setError('Please enter your Mail ID.');
       return;
     }
 
     setLoading(true);
     
     try {
-      // Create user session with Name and Gmail
+      // Create citizen account session with Name and Mail ID
       const user = {
         id: Date.now(),
         full_name: name.trim(),
@@ -41,10 +41,10 @@ export function Login() {
       const token = 'citizen-token-' + Date.now();
       login(token, user);
       
-      // Navigate to submit page or dashboard
+      // Navigate to submit request or dashboard
       navigate('/submit');
     } catch (err: any) {
-      setError('Sign in failed. Please try again.');
+      setError('Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -57,9 +57,12 @@ export function Login() {
           <div className="flex justify-center mb-3">
             <CivicEaseLogo size="lg" />
           </div>
-          <h1 className="text-2xl font-bold text-gov-navy">Sign In</h1>
+          <h1 className="text-2xl font-bold text-gov-navy flex items-center justify-center gap-2">
+            <UserPlus className="text-gov-blue" size={24} />
+            Create Account
+          </h1>
           <p className="text-sm text-gov-text-sec mt-1">
-            Enter your Name and Gmail to access CivicEase
+            Enter your Name and Mail ID to continue
           </p>
         </div>
         
@@ -74,7 +77,7 @@ export function Login() {
           {/* Name Field */}
           <div>
             <label className="block text-sm font-bold text-gov-navy mb-1.5" htmlFor="name">
-              Full Name
+              Name
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -83,7 +86,7 @@ export function Login() {
                 type="text" 
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="e.g. Kruthika H S"
+                placeholder="Enter your name"
                 className="w-full pl-10 pr-4 py-2.5 border border-gov-border rounded-lg focus:ring-2 focus:ring-gov-blue focus:border-gov-blue outline-none text-sm transition-all"
                 required
                 autoFocus
@@ -91,10 +94,10 @@ export function Login() {
             </div>
           </div>
 
-          {/* Gmail / Email Field */}
+          {/* Mail ID Field */}
           <div>
             <label className="block text-sm font-bold text-gov-navy mb-1.5" htmlFor="email">
-              Gmail / Email Address
+              Mail ID
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -103,7 +106,7 @@ export function Login() {
                 type="email" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="e.g. name@gmail.com"
+                placeholder="Enter your mail ID (e.g. name@gmail.com)"
                 className="w-full pl-10 pr-4 py-2.5 border border-gov-border rounded-lg focus:ring-2 focus:ring-gov-blue focus:border-gov-blue outline-none text-sm transition-all"
                 required
               />
@@ -119,11 +122,11 @@ export function Login() {
             {loading ? (
               <>
                 <Loader2 className="animate-spin" size={16} />
-                Signing In...
+                Creating Account...
               </>
             ) : (
               <>
-                <span>Sign In</span>
+                <span>Create Account</span>
                 <ArrowRight size={16} />
               </>
             )}
@@ -131,7 +134,7 @@ export function Login() {
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          No password needed. Simply sign in with your Name and Gmail.
+          No password needed. Provide your Name and Mail ID to get started.
         </div>
       </div>
     </div>

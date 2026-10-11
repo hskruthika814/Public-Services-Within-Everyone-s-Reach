@@ -61,7 +61,7 @@ export function Header() {
             ) : (
               <div className="flex items-center gap-3 ml-4">
                 <Link to="/login" className="px-4 py-2 text-gov-blue border border-gov-blue rounded-md hover:bg-gov-blue-pale font-medium transition-colors">
-                  Sign In
+                  Create Account
                 </Link>
                 <Link to="/submit" className="px-4 py-2 bg-gov-saffron text-white rounded-md hover:bg-orange-600 font-medium transition-colors">
                   Submit Request
